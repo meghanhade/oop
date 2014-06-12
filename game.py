@@ -28,12 +28,28 @@ class Rock(GameElement):
     IMAGE = "Rock"
     SOLID = False
 
-    # def interact(self, player):
-    #     player.IMAGE = "Invisible"
+    #def interact(self, player):
+         # player.IMAGE = "Invisible"
+        #print "ROCK"
+        # if direction == "up":
+        #     return (player.x, player.y-2)
+        # elif direction == "down":
+        #     return (splayer.x, player.y+2)
+        # elif direction == "left":
+        #     return(player.x-2, player.y)
+        # elif direction == "right":
+        #     return (player.x+2, player.y)
+        # else:
+        #     return None
+
+class Heart(GameElement):
+    IMAGE = "Heart"
+    SOLID = True
 
 class Character(GameElement):
     IMAGE = "Dirt"
-    def next_pos(self, direction):
+    def next_pos_none(self, direction):
+
         if direction == "up":
             return (self.x, self.y-1)
         elif direction == "down":
@@ -47,10 +63,28 @@ class Character(GameElement):
     def __init__(self):
         GameElement.__init__(self)
         self.inventory = []
+        self.his_inventory = []
 
-    def interact (self,Rock):
-        IMAGE = "Heart"
-        return IMAGE
+    def next_pos_element (self, direction):
+        print "CHARACTER"
+        if direction == "up":
+            return (self.x, self.y-2)
+        elif direction == "down":
+            return (self.x, self.y+2)
+        elif direction == "left":
+            return(self.x-2, self.y)
+        elif direction == "right":
+            return (self.x+2, self.y)
+        else:
+            return None
+        self.his_inventory.append(Rock)
+        GAME_BOARD.draw_msg("History Inventory: %d" % (self.his_inventory)) 
+
+
+
+class Character_Rock(Character):
+    IMAGE = "Rock"
+
 
 
 
@@ -78,24 +112,27 @@ def keyboard_handler():
     
 
     if direction:
-        next_location = PLAYER.next_pos(direction)
+        next_location = PLAYER.next_pos_none(direction)
         next_x = next_location[0]
         next_y = next_location[1]
 
         if next_location[0] in range(0,GAME_WIDTH) and next_location[1] in range(0, GAME_HEIGHT):
             existing_el = GAME_BOARD.get_el(next_x, next_y)
 
+            print isinstance(existing_el, Rock)
+
+            if isinstance(existing_el, Rock):
+                next_location = PLAYER.next_pos_element(direction)
+                next_x = next_location[0]
+                next_y = next_location[1]
+                GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+                GAME_BOARD.set_el(next_x, next_y, PLAYER)
+
             if existing_el:
                 existing_el.interact(PLAYER)
 
             #if existing_el is not existing_el.SOLID:
-            if existing_el is not None:
-                PLAYER.IMAGE = existing_el.IMAGE
-                GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-                #GAME_BOARD.set_el(next_x, next_y, PLAYER)
-                GAME_BOARD.set_el(next_x, next_y, PLAYER)
-                #setup_images()
-                print PLAYER.IMAGE
+
             else:
                 GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
                 GAME_BOARD.set_el(next_x, next_y, PLAYER)
@@ -114,11 +151,6 @@ def initialize():
             (2,1),
             (1,2),
             (3,2),
-            (2,3),
-            (1,1),
-            (1,3),
-            (1,4),
-            (0,0)
         ]
 
     rocks = []
@@ -133,6 +165,27 @@ def initialize():
 
     for rock in rocks:
         print rock
+
+    heart_positions = [
+            (3,1),
+            (2,4),
+            (4,2),
+        ]
+
+    hearts = []
+
+    for pos in heart_positions:
+        heart = Heart()
+        GAME_BOARD.register(heart)
+        GAME_BOARD.set_el(pos[0], pos[1], heart)
+        hearts.append(heart)
+
+    # rocks[-5].SOLID = False
+
+    for heart in hearts:
+        print heart
+
+
 
     GAME_BOARD.draw_msg("YOU MUST WIN IT BACK")
     gem = Gem()

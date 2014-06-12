@@ -227,13 +227,13 @@ def run():
         def handler_wrapper(dt):
             handler()
         pyglet.clock.schedule_interval(handler_wrapper, 1/10.0)
-        setup_images
     except AttributeError:
         print "No keyboard handler"
         pass
         
     # Set up the update clock
     pyglet.clock.schedule_interval(update, 1/10.)
+    print pyglet.clock
     game.initialize()
     pyglet.app.run()
 
