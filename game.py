@@ -4,6 +4,7 @@ from pyglet.window import key
 from core import GameElement
 import sys
 
+
 #### DO NOT TOUCH ####
 GAME_BOARD = None
 DEBUG = False
@@ -11,8 +12,8 @@ KEYBOARD = None
 PLAYER = None
 ######################
 
-GAME_WIDTH = 5
-GAME_HEIGHT = 5
+GAME_WIDTH = 6
+GAME_HEIGHT = 6
 
 #### Put class definitions here ####
 class Gem(GameElement):
@@ -21,11 +22,14 @@ class Gem(GameElement):
 
     def interact(self,player):
         player.inventory.append(self)
-        GAME_BOARD.draw_msg("You just acquired a gem! You have %d items!" % (len(player.inventory)))
+        GAME_BOARD.draw_msg("You just won back a gem! You have %d items!" % (len(player.inventory)))
 
 class Rock(GameElement):
     IMAGE = "Rock"
-    SOLID = True
+    SOLID = False
+
+    # def interact(self, player):
+    #     player.IMAGE = "Invisible"
 
 class Character(GameElement):
     IMAGE = "Dirt"
@@ -43,6 +47,12 @@ class Character(GameElement):
     def __init__(self):
         GameElement.__init__(self)
         self.inventory = []
+
+    def interact (self,Rock):
+        IMAGE = "Heart"
+        return IMAGE
+
+
 
 
 ####   End class definitions    ####
@@ -72,14 +82,25 @@ def keyboard_handler():
         next_x = next_location[0]
         next_y = next_location[1]
 
-        existing_el = GAME_BOARD.get_el(next_x, next_y)
+        if next_location[0] in range(0,GAME_WIDTH) and next_location[1] in range(0, GAME_HEIGHT):
+            existing_el = GAME_BOARD.get_el(next_x, next_y)
 
-        if existing_el:
-            existing_el.interact(PLAYER)
+            if existing_el:
+                existing_el.interact(PLAYER)
 
-        if existing_el is None or not existing_el.SOLID:
-            GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
-            GAME_BOARD.set_el(next_x, next_y, PLAYER)
+            #if existing_el is not existing_el.SOLID:
+            if existing_el is not None:
+                PLAYER.IMAGE = existing_el.IMAGE
+                GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+                #GAME_BOARD.set_el(next_x, next_y, PLAYER)
+                GAME_BOARD.set_el(next_x, next_y, PLAYER)
+                #setup_images()
+                print PLAYER.IMAGE
+            else:
+                GAME_BOARD.del_el(PLAYER.x, PLAYER.y)
+                GAME_BOARD.set_el(next_x, next_y, PLAYER)
+        # else:
+        #     GAME_BOARD.draw_msg("Cannot go off board")
 
 def initialize():
     
@@ -108,7 +129,7 @@ def initialize():
         GAME_BOARD.set_el(pos[0], pos[1], rock)
         rocks.append(rock)
 
-    rocks[-5].SOLID = False
+    # rocks[-5].SOLID = False
 
     for rock in rocks:
         print rock

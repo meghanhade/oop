@@ -41,7 +41,8 @@ def setup_images():
             "Horns": "Character Horn Girl.png",
             "Girl": "Character Pink Girl.png",
             "Princess": "Character Princess Girl.png",
-            "Dirt": "Dirt Block.png"
+            "Dirt": "Dirt Block.png",
+            "Invisible": "invisible.png"
             }
 
     for k,v in filenames.items():
@@ -76,7 +77,7 @@ class Board(object):
                 # On the boundaries
                 game_map.append(["Block"] * width)
             else:
-                row = ["Block"] + (["GrassBlock"] * inner_width) + ["Block"]
+                row = ["Block"] + (["Block"] * inner_width) + ["Block"]
                 game_map.append(row)
         
         self.base_board = game_map
@@ -226,6 +227,7 @@ def run():
         def handler_wrapper(dt):
             handler()
         pyglet.clock.schedule_interval(handler_wrapper, 1/10.0)
+        setup_images
     except AttributeError:
         print "No keyboard handler"
         pass
